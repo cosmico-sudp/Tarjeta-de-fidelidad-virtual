@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17654f">
+<title>Tarjeta Pueblo Café</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Mismos colores y letras que la Caja Virtual. Una columna tipo app; la tarjeta manda. */
+:root{
+  --bg:#eaefec; --surface:#ffffff; --sunk:#dfe6e2; --ink:#14201b; --muted:#56675f; --line:#cfd9d3;
+  --accent:#17654f; --accent-ink:#ffffff; --accent-soft:#d3e9e0;
+  --card:#17654f; --card-ink:#f4f1e6; --seal:#f0b24a; --seal-ink:#3a2408;
+  --ok:#1c7445; --bad:#b3261e; --warn:#975400; --warn-soft:#fae6c3;
+  --f-display:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
+  --f-body:'Figtree',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1513; --surface:#17201c; --sunk:#0b100e; --ink:#e5ede9; --muted:#93a59c; --line:#28342f;
+  --accent:#4cbf96; --accent-ink:#04241a; --accent-soft:#163a2e;
+  --card:#1b5e49; --card-ink:#f4f1e6; --seal:#f0b24a; --seal-ink:#3a2408;
+  --ok:#5fcf91; --bad:#ff8b80; --warn:#f1b552; --warn-soft:#3a2a10; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1513; --surface:#17201c; --sunk:#0b100e; --ink:#e5ede9; --muted:#93a59c; --line:#28342f;
+  --accent:#4cbf96; --accent-ink:#04241a; --accent-soft:#163a2e;
+  --card:#1b5e49; --card-ink:#f4f1e6; --seal:#f0b24a; --seal-ink:#3a2408;
+  --ok:#5fcf91; --bad:#ff8b80; --warn:#f1b552; --warn-soft:#3a2a10; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1.1}
+.brand small{display:block;font-family:var(--f-body);font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.banner{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 14px;font-size:13.5px;font-weight:500}
+
+.card{background:var(--card);color:var(--card-ink);border-radius:20px;padding:22px 20px 20px;position:relative;overflow:hidden;box-shadow:0 14px 30px -18px rgba(0,0,0,.55)}
+.card::after{content:"";position:absolute;right:-70px;top:-70px;width:200px;height:200px;border-radius:50%;border:30px solid rgba(244,241,230,.06);pointer-events:none}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card .id{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;opacity:.75}
+.card h1{font-family:var(--f-display);font-weight:800;font-size:23px;margin:4px 0 0;line-height:1.15;text-wrap:balance}
+.count{font-family:var(--f-display);font-weight:800;font-size:42px;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.count span{font-size:16px;font-weight:600;opacity:.65}
+.seals{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:20px;position:relative;z-index:1}
+.seal{aspect-ratio:1;max-width:100%;border-radius:50%;border:2px dashed rgba(244,241,230,.35);background:rgba(244,241,230,.08);
+  display:grid;place-items:center;font-family:var(--f-display);font-weight:600;font-size:14px;color:rgba(244,241,230,.5)}
+.seal.on{background:var(--seal);border:2px solid var(--seal);color:var(--seal-ink);transform:rotate(-8deg)}
+.seal.on svg{width:56%;height:56%}
+.seal.free{border-style:solid;border-color:rgba(244,241,230,.6);font-size:11px;color:rgba(244,241,230,.85)}
+.seal.new{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(1.6) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(-8deg);opacity:1}}
+.card-foot{margin-top:18px;font-size:14px;position:relative;z-index:1}
+.bar{height:6px;border-radius:6px;background:rgba(244,241,230,.16);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--seal);border-radius:6px;transition:width .4s}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.panel h2{font-family:var(--f-display);font-weight:800;font-size:19px;margin:0;line-height:1.2}
+.panel p{margin:0;color:var(--muted);font-size:14px}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+label{font-size:13px;font-weight:600}
+.row{display:flex;gap:8px}
+.in{flex:1;min-width:0;font:inherit;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.in.code{font-family:var(--f-mono);font-weight:700;font-size:20px;letter-spacing:.3em;text-transform:uppercase;text-align:center}
+.in.code::placeholder{letter-spacing:.3em;color:var(--line)}
+.in:focus-visible,button:focus-visible{outline:3px solid var(--seal);outline-offset:2px}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:12px 16px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:600}
+button.wide{width:100%;padding:14px;font-size:16px}
+button:disabled{opacity:.5;cursor:wait}
+.msg{font-size:14px;font-weight:600;min-height:1.4em;margin:0}
+.msg.ok{color:var(--ok)} .msg.err{color:var(--bad)}
+.prizes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.prize{text-align:left;background:var(--bg);color:var(--ink);border:2px solid var(--line);padding:12px;font-weight:500}
+.prize b{display:block;font-family:var(--f-display);font-size:15px;line-height:1.25}
+.prize small{color:var(--muted)}
+.prize[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.cashier{border:2px dashed var(--accent);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--sunk)}
+.cashier .chosen{font-family:var(--f-display);font-weight:800;font-size:22px}
+.in.pin{font-family:var(--f-mono);letter-spacing:.4em;font-size:20px;text-align:center}
+.done{text-align:center;align-items:center;padding:28px 18px}
+.done .chosen{font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1.2}
+.hist{list-style:none;margin:0;padding:0;font-size:14px}
+.hist li{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.hist li:last-child{border-bottom:0}
+.hist span{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.loading{text-align:center;color:var(--muted);padding:40px 0}
+.note{font-size:12.5px;color:var(--muted);text-align:center;margin:0}
+@media (prefers-reduced-motion:reduce){.seal.new{animation:none}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Pueblo Café bar<small>Tarjeta de fidelidad</small></div>
+  </header>
+
+  <div class="banner" id="demoBanner" hidden>Modo de prueba: todavía no está conectada a la base de datos. Cualquier código de 6 caracteres suma un sello y el PIN es 1234.</div>
+
+  <div class="loading" id="loading">Cargando tu tarjeta…</div>
+
+  <section class="card" id="card" aria-label="Tu tarjeta de sellos" hidden>
+    <div class="card-top">
+      <div>
+        <div class="id" id="cardId"></div>
+        <h1 id="cardTitle">Junta 10 sellos y elige un producto gratis</h1>
+      </div>
+      <div class="count"><span id="countNum">0</span><span>/10</span></div>
+    </div>
+    <div class="seals" id="seals"></div>
+    <div class="card-foot">
+      <div id="footText"></div>
+      <div class="bar"><i id="barFill" style="width:0"></i></div>
+    </div>
+  </section>
+
+  <section class="panel" id="addPanel" hidden>
+    <div class="eyebrow">Sumar un sello</div>
+    <h2>Ingresa el código de tu boleta</h2>
+    <p>Está en el recuadro “Tarjeta de fidelidad”, abajo del total. Cada código suma un sello y sirve una sola vez.</p>
+    <label for="code">Código de fidelidad</label>
+    <input class="in code" id="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="••••••">
+    <button class="wide" id="addBtn">Sumar sello</button>
+    <p class="msg" id="addMsg" role="status"></p>
+  </section>
+
+  <section class="panel" id="redeemPanel" hidden>
+    <div class="eyebrow">Tarjeta completa</div>
+    <h2>Elige tu producto gratis</h2>
+    <div class="prizes" id="prizes"></div>
+    <div class="cashier" id="cashier" hidden>
+      <p>Muestra esta pantalla en caja.</p>
+      <div class="chosen" id="chosenName"></div>
+      <label for="pin">PIN del cajero</label>
+      <input class="in pin" id="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+      <button class="wide" id="redeemBtn">Confirmar canje</button>
+      <p class="msg" id="pinMsg" role="status"></p>
+    </div>
+  </section>
+
+  <section class="panel done" id="donePanel" hidden>
+    <div class="eyebrow">Canje confirmado</div>
+    <div class="chosen" id="doneName"></div>
+    <p>Disfrútalo. Tu tarjeta anterior se cerró y ya tienes una nueva para seguir juntando sellos.</p>
+    <button class="wide" id="newBtn">Ver mi tarjeta nueva</button>
+  </section>
+
+  <section class="panel" id="histPanel" hidden>
+    <h2>Premios canjeados</h2>
+    <ul class="hist" id="hist"></ul>
+  </section>
+
+  <p class="note">Tu tarjeta se guarda en este celular. Si borras los datos del navegador o cambias de celular, se pierde.</p>
+</div>
+
+<!-- Firebase (solo se usa cuando pegas tu configuración abajo) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =========================================================
+   1) PEGA AQUÍ tu firebaseConfig (Configuración del proyecto → Tus apps).
+      Mientras diga "PEGA_AQUI", la página funciona en modo de prueba.
+   2) Cambia los premios por los productos que quieran regalar.
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "PEGA_AQUI",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+const PREMIOS = [
+  {n:"Helado 1 sabor", d:"Una bola"},
+  {n:"Frappé", d:"Del sabor que quieras"},
+  {n:"Sándwich", d:"De la carta"},
+  {n:"Jugo de fruta", d:"Vaso grande"}
+];
+const META = 10;
+
+(function(){
+const DEMO = !firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("PEGA");
+const LS = "puebloCafe.tarjeta";
+const CH = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const $ = id => document.getElementById(id);
+const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+const rnd = n => { let s=""; for(let i=0;i<n;i++) s+=CH[Math.floor(Math.random()*CH.length)]; return s; };
+
+let local = { id:null, historial:[] , demo:{sellos:0, usados:[]} };
+let sellos = 0, elegido = null, nuevo = -1;
+try{ Object.assign(local, JSON.parse(localStorage.getItem(LS)) || {}); }catch(e){}
+const guardar = () => { try{ localStorage.setItem(LS, JSON.stringify(local)); }catch(e){} };
+
+let db = null;
+if(!DEMO){
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+} else { $("demoBanner").hidden = false; }
+const ts = () => DEMO ? null : firebase.firestore.FieldValue.serverTimestamp();
+
+/* ---------- tarjeta ---------- */
+async function crearTarjeta(){
+  const id = "PC-" + rnd(6);
+  if(!DEMO) await db.collection("tarjetas").doc(id).set({sellos:0, estado:"activa", creada:ts()});
+  else local.demo = {sellos:0, usados:local.demo?.usados || []};
+  local.id = id; guardar(); sellos = 0;
+}
+async function cargar(){
+  try{
+    if(!local.id){ await crearTarjeta(); }
+    else if(!DEMO){
+      const d = await db.collection("tarjetas").doc(local.id).get();
+      if(!d.exists || d.data().estado !== "activa") await crearTarjeta();
+      else sellos = d.data().sellos || 0;
+    } else sellos = local.demo.sellos || 0;
+    $("loading").hidden = true; $("card").hidden = false;
+    pintar();
+  }catch(e){
+    console.error(e);
+    $("loading").textContent = "No se pudo cargar tu tarjeta. Revisa tu conexión y recarga la página.";
+  }
+}
+
+function pintar(){
+  const lleno = sellos >= META;
+  $("cardId").textContent = "Tarjeta " + local.id;
+  $("countNum").textContent = sellos;
+  $("barFill").style.width = (sellos/META*100) + "%";
+  const box = $("seals"); box.innerHTML = "";
+  for(let i=0;i<META;i++){
+    const d = document.createElement("div");
+    const on = i < sellos;
+    d.className = "seal" + (on?" on":"") + (i===nuevo?" new":"") + (!on && i===META-1?" free":"");
+    d.innerHTML = on ? check : (i===META-1 ? "Gratis" : String(i+1));
+    box.appendChild(d);
+  }
+  nuevo = -1;
+  const faltan = META - sellos;
+  $("cardTitle").textContent = lleno ? "¡Tarjeta completa!" : "Junta 10 sellos y elige un producto gratis";
+  $("footText").textContent = lleno ? "Elige tu producto y muéstralo en caja." :
+    faltan === 1 ? "Te falta 1 sello para tu producto gratis." : `Te faltan ${faltan} sellos para tu producto gratis.`;
+  $("addPanel").hidden = lleno;
+  $("redeemPanel").hidden = !lleno;
+  pintarPremios();
+  const h = $("hist"); h.innerHTML = "";
+  $("histPanel").hidden = !local.historial.length;
+  local.historial.slice().reverse().forEach(x => {
+    const li = document.createElement("li");
+    li.textContent = x.p;
+    const s = document.createElement("span"); s.textContent = x.f; li.appendChild(s);
+    h.appendChild(li);
+  });
+}
+function pintarPremios(){
+  const box = $("prizes"); box.innerHTML = "";
+  PREMIOS.forEach(p => {
+    const b = document.createElement("button");
+    b.className = "prize"; b.type = "button";
+    b.setAttribute("aria-pressed", elegido === p.n ? "true" : "false");
+    b.innerHTML = "<b></b><small></small>";
+    b.querySelector("b").textContent = p.n; b.querySelector("small").textContent = p.d;
+    b.onclick = () => { elegido = p.n; $("chosenName").textContent = p.n; $("cashier").hidden = false; $("pinMsg").textContent = ""; pintarPremios(); };
+    box.appendChild(b);
+  });
+}
+function msg(el, txt, ok){ el.className = "msg " + (ok ? "ok" : "err"); el.textContent = txt; }
+
+/* ---------- sumar sello ---------- */
+class Aviso extends Error {}
+async function sumar(){
+  const code = $("code").value.trim().toUpperCase();
+  const m = $("addMsg");
+  if(!/^[A-Z0-9]{6}$/.test(code)) return msg(m, "El código tiene 6 letras y números. Revisa tu boleta.");
+  if(sellos >= META) return;
+  $("addBtn").disabled = true;
+  try{
+    if(DEMO){
+      if(local.demo.usados.includes(code)) throw new Aviso("Este código ya fue usado. Cada boleta suma un solo sello.");
+      local.demo.usados.push(code); local.demo.sellos = ++sellos; guardar();
+    } else {
+      const cRef = db.collection("codigos").doc(code);
+      const tRef = db.collection("tarjetas").doc(local.id);
+      sellos = await db.runTransaction(async tx => {
+        const c = await tx.get(cRef), t = await tx.get(tRef);
+        if(!c.exists) throw new Aviso("Ese código no existe. Revisa que esté bien escrito.");
+        const e = c.data().estado;
+        if(e === "usado") throw new Aviso("Este código ya fue usado. Cada boleta suma un solo sello.");
+        if(e !== "disponible") throw new Aviso("Este código ya no es válido porque la boleta fue anulada.");
+        const s = (t.data()?.sellos || 0);
+        if(s >= META) throw new Aviso("Tu tarjeta ya está completa. Canjea tu premio primero.");
+        tx.update(cRef, {estado:"usado", tarjeta:local.id, usadoEn:ts()});
+        tx.update(tRef, {sellos:s+1, ultimoCodigo:code});
+        return s + 1;
+      });
+    }
+    nuevo = sellos - 1;
+    $("code").value = "";
+    msg(m, `Sello sumado. Llevas ${sellos} de ${META}.`, true);
+    pintar();
+  }catch(e){
+    if(e instanceof Aviso) msg(m, e.message);
+    else { console.error(e); msg(m, "No se pudo sumar el sello. Revisa tu conexión e inténtalo otra vez."); }
+  }finally{ $("addBtn").disabled = false; }
+}
+
+/* ---------- canjear ---------- */
+async function canjear(){
+  const pin = $("pin").value.trim();
+  const m = $("pinMsg");
+  if(!elegido) return;
+  if(!/^\d{4}$/.test(pin)) return msg(m, "El PIN tiene 4 números.");
+  $("redeemBtn").disabled = true;
+  try{
+    if(DEMO){
+      if(pin !== "1234") throw new Aviso("PIN incorrecto. Pídele al cajero que lo ingrese de nuevo.");
+    } else {
+      // El PIN lo revisa Firebase con sus reglas; nunca se descarga al celular.
+      const cRef = db.collection("canjes").doc();
+      const batch = db.batch();
+      batch.set(cRef, {tarjeta:local.id, producto:elegido, pin, fecha:ts()});
+      batch.update(db.collection("tarjetas").doc(local.id), {estado:"canjeada", canje:cRef.id});
+      try{ await batch.commit(); }
+      catch(e){ if(e.code === "permission-denied") throw new Aviso("PIN incorrecto. Pídele al cajero que lo ingrese de nuevo."); throw e; }
+    }
+    local.historial.push({p:elegido, f:new Date().toLocaleDateString("es-PE",{day:"numeric",month:"short",year:"numeric"})});
+    $("doneName").textContent = elegido;
+    await crearTarjeta();   // la tarjeta llena se cierra y empieza una nueva
+    elegido = null; $("pin").value = ""; $("cashier").hidden = true; m.textContent = "";
+    $("card").hidden = true; $("redeemPanel").hidden = true; $("donePanel").hidden = false;
+  }catch(e){
+    if(e instanceof Aviso) msg(m, e.message);
+    else { console.error(e); msg(m, "No se pudo confirmar el canje. Revisa tu conexión e inténtalo otra vez."); }
+  }finally{ $("redeemBtn").disabled = false; }
+}
+
+$("addBtn").onclick = sumar;
+$("code").addEventListener("keydown", e => { if(e.key === "Enter") sumar(); });
+$("redeemBtn").onclick = canjear;
+$("pin").addEventListener("keydown", e => { if(e.key === "Enter") canjear(); });
+$("newBtn").onclick = () => { $("donePanel").hidden = true; $("card").hidden = false; $("addMsg").textContent = ""; pintar(); };
+
+// Si el QR trae el código (…/tarjeta.html?c=ABC123), lo deja escrito
+try{ const c = new URLSearchParams(location.search).get("c"); if(c) $("code").value = c.toUpperCase().slice(0,6); }catch(e){}
+
+cargar();
+})();
+</script>
+</body>
+</html>
